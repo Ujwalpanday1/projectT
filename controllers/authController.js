@@ -9,8 +9,8 @@ import generataVerificationCode from "../utilities/generateVerificationCode.js";
 configDotenv();
 
 const handleLogin = (req, res) => {
-  const { username, password } = req.body;
-  User.findOne({ username ,verified:true}) .select('+password')
+  const { email, password } = req.body;
+  User.findOne({ email ,verified:true}) .select('+password')
    
     .then((user) => {
       if (user) {
@@ -49,12 +49,12 @@ const handleLogout = (req, res) => {
 
 const handleSignup = (req, res) => {
   const verificationCode = generataVerificationCode();
-  const { name, username, password } = req.body;
+  const { name, email, password } = req.body;
 
-  User.findOne({ username })
+  User.findOne({ email })
     .then((user) => {
       if (user && user.verified) {
-        res.status(401).send("Username already taken!");
+        res.status(401).send("Email  already taken!");
       } else {
         if (user) {
           User.findByIdAndDelete(user._id).then(() => {
@@ -63,13 +63,13 @@ const handleSignup = (req, res) => {
                 res.status(401).send("Error hashing password");
               } else {
                 User.create({
-                  username,
+                  email,
                   name,
                   password: hashedP,
                   verificationCode,
                 })
                   .then((user) => {
-                    sendVerificationCode(username, verificationCode);
+                    sendVerificationCode(email, verificationCode);
                     res
                       .status(200)
                       .send(
@@ -90,13 +90,13 @@ const handleSignup = (req, res) => {
                   res.status(401).send("Error hashing password");
                 } else {
                   User.create({
-                    username,
+                    email,
                     name,
                     password: hashedP,
                     verificationCode,
                   })
                     .then((user) => {
-                      sendVerificationCode(username, verificationCode);
+                      sendVerificationCode(email, verificationCode);
                       res
                         .status(200)
                         .send(
@@ -122,7 +122,7 @@ const handleVerification = (req, res) => {
   const { email, verificationCode } = req.query;
 
   User.findOneAndUpdate(
-    { username: email, verificationCode },
+    {email, verificationCode },
     {
       $set: { verified: true, verificationCode: null },
     },
@@ -136,11 +136,11 @@ const handleVerification = (req, res) => {
         httpOnly: true,
         sameSite: "strict",
       });
-      res.status(200).send("username is verified and token is set in cookie");
+      res.status(200).send("email is verified and token is set in cookie");
     })
     .catch((err) => {
       console.log(err);
-      res.status(400).send("error verifying username");
+      res.status(400).send("error verifying email");
     });
 };
 

@@ -8,7 +8,7 @@ const purchaseSchema=new mongoose.Schema({
         },
     price:{
         type:"string",
-
+        
         },
     purchasedAt: {
         type: Date,
@@ -21,7 +21,7 @@ const userSchema=new mongoose.Schema({
         type:"string",
         required:true,
     },
-    username:{
+    email:{
         type:"string",
         required:true,
         unique:true,
